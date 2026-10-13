@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+data/*.db
+data/chroma_db/
+data/vector_indices/
+data/exports/
+uploads/*
+!uploads/.gitkeep
+.env
+.DS_Store
+Thumbs.db

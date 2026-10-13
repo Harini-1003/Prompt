@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoExam RAG - Automated Question Paper Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans antialiased">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand">
+        <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <span class="brand-title">AutoExam <span class="gradient-text">RAG</span></span>
+          <span class="brand-subtitle">AI Question Paper Generator & Blueprint Architect</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div id="userBadge" class="user-badge hidden">
+          <i class="fa-solid fa-circle-user"></i>
+          <span id="navUsername">Professor</span>
+          <button onclick="handleLogout()" class="btn-logout" title="Sign Out"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+        <div id="authNavButtons" class="auth-nav-btns">
+          <button onclick="switchView('landing')" class="nav-link">Home</button>
+          <button onclick="openAuthModal('signin')" class="btn-outline-sm">Sign In</button>
+          <button onclick="openAuthModal('signup')" class="btn-primary-sm">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="main-content">
+
+    <!-- 1. LANDING PAGE VIEW -->
+    <section id="viewLanding" class="view-section active">
+      <div class="hero-container">
+        <div class="hero-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> 100% Free & Open-Source Academic RAG</div>
+        <h1 class="hero-title">Automated Question Paper Generator <br/><span class="gradient-text">Course Outcome & Bloom's Taxonomy Driven</span></h1>
+        <p class="hero-desc">
+          Upload syllabi in any format (PDF, DOCX, PPTX, Scanned OCR, Spreadsheets). Index curriculum using local vector embeddings, and generate perfectly balanced university exam question papers grounded strictly in your syllabus.
+        </p>
+        <div class="hero-cta">
+          <button onclick="goToApp()" class="btn-cta-primary"><i class="fa-solid fa-rocket"></i> Launch Generator</button>
+          <button onclick="openAuthModal('signin')" class="btn-cta-secondary"><i class="fa-solid fa-key"></i> Quick Login</button>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feat-icon"><i class="fa-solid fa-diagram-project"></i></div>
+            <h3>5 Isolated Subjects</h3>
+            <p>Dedicated vector indices per subject prevent cross-contamination and guarantee exact syllabus grounding.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feat-icon"><i class="fa-solid fa-file-invoice"></i></div>
+            <h3>Universal File Parser & OCR</h3>
+            <p>Ingests PDFs, Word, PowerPoint, Excel, Images with Tesseract OCR with automatic unit & CO extraction.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feat-icon"><i class="fa-solid fa-brain"></i></div>
+            <h3>Bloom's & NBA Blueprint</h3>
+            <p>Full mapping across Remember to Create levels, automatic question paper blueprint validation and warnings.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feat-icon"><i class="fa-solid fa-file-arrow-down"></i></div>
+            <h3>University PDF & DOCX</h3>
+            <p>Export ready-to-print question papers alongside confidential answer keys and marking scheme rubrics.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. APPLICATION DASHBOARD VIEW (AFTER AUTH / DIRECT LAUNCH) -->
+    <section id="viewDashboard" class="view-section">
+      <!-- DASHBOARD TABS -->
+      <div class="dashboard-tabs">
+        <button class="tab-btn active" onclick="switchTab('subjects')"><i class="fa-solid fa-book-bookmark"></i> 1. Subjects</button>
+        <button class="tab-btn" onclick="switchTab('upload')"><i class="fa-solid fa-cloud-arrow-up"></i> 2. Upload Syllabus</button>
+        <button class="tab-btn" onclick="switchTab('generate')"><i class="fa-solid fa-file-circle-plus"></i> 3. Generate Paper</button>
+        <button class="tab-btn" onclick="switchTab('blueprint')"><i class="fa-solid fa-table-cells"></i> 4. Blueprint & Refine</button>
+        <button class="tab-btn" onclick="switchTab('history')"><i class="fa-solid fa-clock-rotate-left"></i> 5. History</button>
+      </div>
+
+      <!-- TAB 1: SUBJECTS -->
+      <div id="tabSubjects" class="tab-pane active">
+        <div class="pane-header">
+          <div>
+            <h2>Manage 5 Subjects</h2>
+            <p class="pane-subtitle">Configure your 5 departmental subjects. Each subject maintains an isolated vector database index.</p>
+          </div>
+          <button onclick="loadSubjects()" class="btn-icon" title="Refresh Subjects"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+
+        <div id="subjectsList" class="subjects-grid">
+          <!-- Loaded dynamically -->
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading Subjects...</div>
+        </div>
+      </div>
+
+      <!-- TAB 2: UPLOAD SYLLABUS -->
+      <div id="tabUpload" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Syllabus Ingestion & Vector Indexing</h2>
+            <p class="pane-subtitle">Supports PDF, DOCX, PPTX, TXT, MD, XLSX, CSV, JPG, PNG with OCR fallback.</p>
+          </div>
+        </div>
+
+        <div class="card-grid-2">
+          <!-- Upload Form -->
+          <div class="card">
+            <div class="form-group">
+              <label>Select Target Subject</label>
+              <select id="uploadSubjectSelect" class="form-control"></select>
+            </div>
+
+            <div class="drop-zone" id="dropZone">
+              <i class="fa-solid fa-file-arrow-up drop-icon"></i>
+              <p>Drag & drop syllabus file here or <span class="highlight-link">browse</span></p>
+              <input type="file" id="syllabusFileInput" class="hidden-input" accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.csv,.txt,.md,.jpg,.jpeg,.png">
+            </div>
+
+            <div id="selectedFileInfo" class="selected-file-info hidden">
+              <i class="fa-solid fa-file-lines"></i>
+              <span id="selectedFileName">syllabus.pdf</span>
+              <button onclick="clearSelectedFile()" class="btn-clear"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <button id="btnProcessSyllabus" onclick="handleSyllabusUpload()" class="btn-primary w-full mt-4">
+              <i class="fa-solid fa-microchip"></i> Parse, Chunk & Embed Syllabus
+            </button>
+
+            <!-- Progress bar -->
+            <div id="uploadProgress" class="progress-box hidden">
+              <div class="progress-bar-container">
+                <div id="uploadProgressBar" class="progress-bar-fill"></div>
+              </div>
+              <p id="uploadProgressText" class="progress-text">Processing syllabus through RAG pipeline...</p>
+            </div>
+          </div>
+
+          <!-- Preview & Course Outcomes Card -->
+          <div class="card">
+            <h3>Extracted Syllabus Preview</h3>
+            <p class="text-sm text-slate-400 mb-2">Review cleaned text and identified Course Outcomes (CO1-CO5).</p>
+            <div class="preview-box" id="syllabusPreviewBox">
+              <span class="text-slate-500 italic">Upload a syllabus to view extracted content, units, and Course Outcomes here.</span>
+            </div>
+
+            <div class="mt-4">
+              <h4>Course Outcomes (NBA/ABET)</h4>
+              <div id="coListDisplay" class="co-list-box">
+                <p class="text-slate-500 text-sm">COs will appear here after parsing or selecting a subject.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: GENERATE PAPER -->
+      <div id="tabGenerate" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Examination Paper Configuration</h2>
+            <p class="pane-subtitle">Define exam metadata, question sections, Bloom's taxonomy weights, and marks.</p>
+          </div>
+        </div>
+
+        <div class="card-grid-3">
+          <!-- Meta Settings -->
+          <div class="card">
+            <h3>Exam Details</h3>
+            <div class="form-group">
+              <label>Subject</label>
+              <select id="genSubjectSelect" class="form-control"></select>
+            </div>
+            <div class="form-group">
+              <label>College / University Name</label>
+              <input type="text" id="genCollegeName" class="form-control" value="Autonomous Institute of Technology">
+            </div>
+            <div class="form-group">
+              <label>Examination Title</label>
+              <input type="text" id="genExamName" class="form-control" value="End Semester Degree Examination">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Subject Code</label>
+                <input type="text" id="genSubjectCode" class="form-control" value="CS501">
+              </div>
+              <div class="form-group">
+                <label>Duration (Mins)</label>
+                <input type="number" id="genDuration" class="form-control" value="180">
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Settings -->
+          <div class="card">
+            <h3>Question Sections</h3>
+            
+            <div class="section-config-item">
+              <div class="section-badge">Part A: Short Answers</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Count</label>
+                  <input type="number" id="secACount" class="form-control" value="5" min="1" max="15">
+                </div>
+                <div class="form-group">
+                  <label>Marks/Q</label>
+                  <input type="number" id="secAMarks" class="form-control" value="2" min="1" max="10">
+                </div>
+              </div>
+            </div>
+
+            <div class="section-config-item">
+              <div class="section-badge">Part B: Medium Analytical</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Count</label>
+                  <input type="number" id="secBCount" class="form-control" value="5" min="1" max="15">
+                </div>
+                <div class="form-group">
+                  <label>Marks/Q</label>
+                  <input type="number" id="secBMarks" class="form-control" value="8" min="2" max="20">
+                </div>
+              </div>
+            </div>
+
+            <div class="section-config-item">
+              <div class="section-badge">Part C: Long Application / Case Study</div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Count</label>
+                  <input type="number" id="secCCount" class="form-control" value="1" min="0" max="5">
+                </div>
+                <div class="form-group">
+                  <label>Marks/Q</label>
+                  <input type="number" id="secCMarks" class="form-control" value="10" min="5" max="30">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloom's Taxonomy & Action -->
+          <div class="card">
+            <h3>Bloom's Taxonomy Weights</h3>
+            <p class="text-sm text-slate-400 mb-3">Distribute cognitive levels across the generated paper:</p>
+            <div class="bloom-checkboxes">
+              <label><input type="checkbox" checked value="Remember" class="bloom-check"> <b>Remember</b> (Define, List)</label>
+              <label><input type="checkbox" checked value="Understand" class="bloom-check"> <b>Understand</b> (Explain, Discuss)</label>
+              <label><input type="checkbox" checked value="Apply" class="bloom-check"> <b>Apply</b> (Calculate, Solve)</label>
+              <label><input type="checkbox" checked value="Analyze" class="bloom-check"> <b>Analyze</b> (Compare, Contrast)</label>
+              <label><input type="checkbox" checked value="Evaluate" class="bloom-check"> <b>Evaluate</b> (Critique, Justify)</label>
+              <label><input type="checkbox" checked value="Create" class="bloom-check"> <b>Create</b> (Design, Synthesize)</label>
+            </div>
+
+            <button id="btnGeneratePaper" onclick="handleGeneratePaper()" class="btn-primary w-full mt-6">
+              <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Grounded Question Paper
+            </button>
+
+            <div id="genProgress" class="progress-box hidden">
+              <div class="progress-bar-container">
+                <div id="genProgressBar" class="progress-bar-fill"></div>
+              </div>
+              <p id="genProgressText" class="progress-text">Retrieving syllabus vectors & generating questions...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: BLUEPRINT, PAPER VIEW & REFINE -->
+      <div id="tabBlueprint" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2 id="paperViewTitle">Question Paper & Blueprint</h2>
+            <p class="pane-subtitle" id="paperViewSubtitle">Review coverage, refine specific questions, and export to PDF/DOCX.</p>
+          </div>
+          <div class="export-btns" id="exportActionBtns">
+            <button onclick="exportCurrentPaper('pdf')" class="btn-export-pdf"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+            <button onclick="exportCurrentPaper('docx')" class="btn-export-docx"><i class="fa-solid fa-file-word"></i> Download DOCX</button>
+            <button onclick="regenerateEntirePaper()" class="btn-outline-sm"><i class="fa-solid fa-arrows-rotate"></i> Regenerate Paper</button>
+          </div>
+        </div>
+
+        <div id="noPaperPlaceholder" class="placeholder-box">
+          <i class="fa-solid fa-file-circle-question placeholder-icon"></i>
+          <h3>No Paper Generated Yet</h3>
+          <p>Go to the "Generate Paper" tab and click generate to view the paper, blueprint, and answer key here.</p>
+        </div>
+
+        <div id="paperContentWrapper" class="hidden">
+          <!-- BLUEPRINT SUMMARY MATRIX -->
+          <div class="card mb-6">
+            <div class="flex-between">
+              <h3><i class="fa-solid fa-table"></i> Blueprint Matrix (CO vs Bloom's Level vs Marks)</h3>
+              <span id="blueprintTotalBadge" class="badge-total">Total Marks: 0</span>
+            </div>
+            
+            <div id="blueprintWarnings" class="blueprint-warnings mb-3"></div>
+
+            <div class="table-responsive">
+              <table class="blueprint-table" id="blueprintTable">
+                <!-- Dynamically populated -->
+              </table>
+            </div>
+          </div>
+
+          <!-- QUESTION PAPER RENDERED -->
+          <div class="card mb-6">
+            <div class="exam-header-banner">
+              <h2 id="displayCollegeName">INSTITUTE OF TECHNOLOGY</h2>
+              <h4 id="displayExamName">END SEMESTER EXAMINATION</h4>
+              <div class="exam-meta-bar" id="displayMetaBar"></div>
+            </div>
+
+            <div id="renderedQuestionsList" class="rendered-sections">
+              <!-- Rendered per section -->
+            </div>
+          </div>
+
+          <!-- ANSWER KEY RENDERED -->
+          <div class="card">
+            <h3><i class="fa-solid fa-key"></i> Confidential Answer Key & Marking Hints</h3>
+            <div id="renderedAnswerKey" class="answer-key-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 5: HISTORY -->
+      <div id="tabHistory" class="tab-pane">
+        <div class="pane-header">
+          <div>
+            <h2>Generated Paper History</h2>
+            <p class="pane-subtitle">Browse and reopen previously created question papers stored in SQLite.</p>
+          </div>
+          <button onclick="loadHistory()" class="btn-icon" title="Refresh History"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+
+        <div id="historyList" class="history-list">
+          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading history...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- AUTH MODAL (SIGN IN / SIGN UP) -->
+  <div id="authModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <button onclick="closeAuthModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div class="auth-tabs">
+        <button id="btnAuthTabSignIn" class="auth-tab-btn active" onclick="setAuthTab('signin')">Sign In</button>
+        <button id="btnAuthTabSignUp" class="auth-tab-btn" onclick="setAuthTab('signup')">Sign Up</button>
+      </div>
+
+      <div class="auth-form-body">
+        <div id="authAlert" class="auth-alert hidden"></div>
+
+        <div id="authFullNameGroup" class="form-group hidden">
+          <label>Full Name / Title</label>
+          <input type="text" id="authFullName" class="form-control" placeholder="Prof. Harini Raman">
+        </div>
+
+        <div class="form-group">
+          <label>Username / Email</label>
+          <input type="text" id="authUsername" class="form-control" placeholder="faculty@university.edu">
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="authPassword" class="form-control" placeholder="••••••••">
+        </div>
+
+        <p class="text-xs text-slate-400 mt-2">
+          <i class="fa-solid fa-shield-halved"></i> Any credentials you enter will authenticate and grant full access.
+        </p>
+
+        <button id="btnSubmitAuth" onclick="submitAuth()" class="btn-primary w-full mt-4">Sign In</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFINE QUESTION MODAL -->
+  <div id="refineModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <button onclick="closeRefineModal()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+      <h3><i class="fa-solid fa-wand-magic"></i> Refine Question</h3>
+      <p class="text-sm text-slate-400 mb-3" id="refineQuestionNumberLabel">Question Q1</p>
+
+      <div class="current-q-preview" id="refineOriginalText"></div>
+
+      <div class="form-group mt-3">
+        <label>Refinement Instruction</label>
+        <div class="quick-chips mb-2">
+          <span class="chip" onclick="setRefineText('Make this question harder and more analytical')">Make Harder</span>
+          <span class="chip" onclick="setRefineText('Make this question simpler and conceptual')">Make Easier</span>
+          <span class="chip" onclick="setRefineText('Change Bloom level to Apply with a real-world calculation')">Change to Apply</span>
+          <span class="chip" onclick="setRefineText('Frame as an industrial case study problem')">Case Study</span>
+        </div>
+        <textarea id="refineInstructionInput" class="form-control" rows="3" placeholder="e.g., Change Bloom's level to Evaluate and add a comparative tradeoff scenario..."></textarea>
+      </div>
+
+      <button id="btnSubmitRefine" onclick="submitQuestionRefinement()" class="btn-primary w-full mt-3">
+        <i class="fa-solid fa-check"></i> Refine This Question
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+COURSE SYLLABUS: DATA STRUCTURES & ALGORITHMS (CS201)
+
+UNIT 1: LINEAR DATA STRUCTURES & COMPLEXITY ANALYSIS
+Asymptotic notations: Big O, Omega, and Theta notations. Time and space complexity analysis.
+Arrays: Dynamic arrays, amortized complexity. Linked Lists: Singly linked lists, doubly linked lists, circular linked lists.
+Applications of Linked Lists: Polynomial manipulation and sparse matrix representation.
+Stacks: Array and linked list representation, infix to postfix conversion, evaluation of postfix expressions.
+Queues: FIFO queue, circular queue, priority queue, double-ended queue (deque).
+
+UNIT 2: NON-LINEAR DATA STRUCTURES & TREES
+Tree terminology: Binary tree, representation, tree traversals (preorder, inorder, postorder, level order).
+Binary Search Trees (BST): Insertion, deletion, search operations, and complexity analysis.
+Self-balancing Trees: AVL trees, rotations (LL, RR, LR, RL), B-Trees, and B+ Trees for database indexing.
+Heaps: Min-heap, max-heap, heapify algorithm, priority queue implementations.
+
+UNIT 3: GRAPH ALGORITHMS & TRAVERSALS
+Graph definitions: Directed and undirected graphs, adjacency matrix and adjacency list representation.
+Graph Traversals: Breadth First Search (BFS) and Depth First Search (DFS), topological sorting.
+Minimum Spanning Trees: Prim's algorithm, Kruskal's algorithm, cut property, and union-find disjoint sets.
+Shortest Paths: Single-source shortest paths using Dijkstra's algorithm, Bellman-Ford algorithm for negative weights, Floyd-Warshall all-pairs shortest paths.
+
+UNIT 4: SORTING, SEARCHING & HASHING
+Searching algorithms: Linear search, binary search, interpolation search.
+Sorting techniques: Bubble sort, selection sort, insertion sort, divide-and-conquer sorting (merge sort, quicksort, randomized quicksort), non-comparison sorts (counting sort, radix sort).
+Hashing techniques: Hash functions, collision resolution strategies: open addressing (linear probing, quadratic probing, double hashing) and separate chaining.
+
+UNIT 5: ADVANCED ALGORITHMIC PARADIGMS & COMPLEXITY
+Divide and Conquer: Master theorem, closest pair of points, fast Fourier transform basics.
+Greedy Strategy: Fractional knapsack problem, Huffman coding for data compression, job sequencing with deadlines.
+Dynamic Programming: Principle of optimality, 0/1 Knapsack, Longest Common Subsequence (LCS), matrix chain multiplication.
+Introduction to NP-Completeness: P vs NP classes, polynomial-time reductions, NP-hard and NP-complete definitions.
+
+COURSE OUTCOMES (NBA / ABET):
+CO1: Understand and analyze the asymptotic time and space complexities of fundamental data structures.
+CO2: Implement and manipulate linear data structures including stacks, queues, and linked lists for computational problems.
+CO3: Design and execute non-linear data structures including binary search trees, AVL trees, and heaps.
+CO4: Apply graph algorithms and hashing techniques to determine optimal paths and resolve collisions.
+CO5: Synthesize greedy and dynamic programming solutions and evaluate tractability of algorithmic challenges.
