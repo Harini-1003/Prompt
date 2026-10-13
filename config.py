@@ -7,10 +7,15 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent
 
 # Storage Paths
-DATA_DIR = BASE_DIR / "data"
-UPLOADS_DIR = BASE_DIR / "uploads"
-DATA_DIR.mkdir(exist_ok=True)
-UPLOADS_DIR.mkdir(exist_ok=True)
+if os.getenv("VERCEL"):
+    DATA_DIR = Path("/tmp/data")
+    UPLOADS_DIR = Path("/tmp/uploads")
+else:
+    DATA_DIR = BASE_DIR / "data"
+    UPLOADS_DIR = BASE_DIR / "uploads"
+
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Database
 DB_PATH = DATA_DIR / "app.db"

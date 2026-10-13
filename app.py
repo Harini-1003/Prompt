@@ -28,8 +28,11 @@ from export.document_exporter import export_to_pdf, export_to_docx
 # Initialize FastAPI application
 app = FastAPI(title="Automated Question Paper Generator")
 
-# Initialize database
-init_db()
+# Initialize database safely
+try:
+    init_db()
+except Exception as e:
+    print(f"Database init warning: {e}")
 
 # Mount static and templates
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
